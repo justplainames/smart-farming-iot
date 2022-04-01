@@ -2,6 +2,7 @@ import asyncio
 import logging
 import uuid
 import struct
+import csv
 
 from bleak import BleakScanner, BleakClient
 
@@ -37,6 +38,10 @@ async def run():
                 def callback(sender, data):
                     val = struct.unpack('f',data)
                     print(f"Received: {val}")
+                    f = open('testing.csv', 'w')
+                    writer = csv.writer(f)
+                    writer.writerow(val)
+
 
                 print("Subscribing to characteristic changes...")
                 while(client.is_connected):
