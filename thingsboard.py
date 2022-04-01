@@ -7,17 +7,17 @@ from sense_hat import SenseHat
 
 sense = SenseHat()
 
+text = (255,0,0)
+back = (0,0,0)
+
 
 def on_message(client, userdata, msg):
     print('Topic: ' + msg.topic + '\nMessage: ' + str(msg.payload))
     y = msg.payload
     x = json.loads(y)
-    print(x['params'])
-    if (str(x['params']) == "False"):
-    	sense.clear((0,0,0))
-    elif (str(x['params']) == "True"):
-        sense.clear((255,0,0))
-
+    print(str(msg.payload))
+    sense.lowLight = True
+    sense.show_message(str(x['params']), text_colour=text, back_colour=back,  scroll_speed=0.05)
 
 
 THINGSBOARD_HOST = 'demo.thingsboard.io'
