@@ -38,7 +38,7 @@ async def run():
                 def callback(sender, data):
                     val = struct.unpack('f',data)
                     print(f"Received: {val}")
-                    f = open('waterLevelData(Live).csv', 'w')
+                    f = open('testing.csv', 'w')
                     writer = csv.writer(f)
                     writer.writerow(val)
 

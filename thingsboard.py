@@ -3,7 +3,6 @@ import time
 import sys
 import paho.mqtt.client as mqtt
 import json
-import csv
 from sense_hat import SenseHat
 
 sense = SenseHat()
@@ -22,12 +21,12 @@ def on_message(client, userdata, msg):
 
 
 THINGSBOARD_HOST = 'demo.thingsboard.io'
-ACCESS_TOKEN = '8DjYuRVnY2KZJU1c9whc'
+ACCESS_TOKEN = 'y3SmMaulErsDoe823pjQ'
 
 INTERVAL = 5
 
 sense = SenseHat()
-sensor_data = {'temperature': 0, 'humidity': 0, 'waterLevel': 0.0}
+sensor_data = {'temperature': 0, 'humidity': 0}
 
 next_reading = time.time()
 
@@ -46,13 +45,10 @@ try:
     while True:
         humidity = sense.get_humidity()
         temperature = sense.get_temperature()
-        with open('waterLevelData(Live).csv','r') as f:
-                waterLevel = float(f.readlines()[-1]) 
         humidity = round(humidity, 2)
         temperature = round(temperature, 2)
-        waterLevel = round(waterLevel, 2)   
-        print(u"Temperature: {:g}, Humidity: {:g}%, waterLevel: {:g}".format(temperature, humidity, waterLevel))
-        sensor_data['waterLevel'] = waterLevel
+        print(u"Temperature: {:g}, Humidity: {:g}%".format(
+            temperature, humidity))
         sensor_data['temperature'] = temperature
         sensor_data['humidity'] = humidity
 
