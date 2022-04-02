@@ -53,7 +53,7 @@ float  sensorValue  = 0;
 void setup() {
   Serial.printf("setup\n");
   M5.begin();
-  //M5.Lcd.setBrightness(0);
+  M5.Lcd.setBrightness(0);
   M5.Lcd.setTextColor(TFT_GREEN, TFT_BLACK);
   M5.Lcd.setTextSize(3);
   M5.Lcd.setRotation(1);
@@ -90,7 +90,7 @@ void loop() {
     delay(1);
   }
   sensorValue = sensorValue / 100.0;
-    M5.Lcd.printf("Water Level: %d\n", sensorValue);
+  //  M5.Lcd.printf("Water Level: %d\n", sensorValue);
 //  Serial.println(sensorValue);
   delay(30);
   if (deviceConnected) {

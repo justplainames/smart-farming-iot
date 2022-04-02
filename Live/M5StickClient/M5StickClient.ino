@@ -20,13 +20,13 @@ bool deviceConnected = false;
 
 class MyServerCallbacks: public BLEServerCallbacks {
     void onConnect(BLEServer* pServer) {
-      M5.Lcd.println("connect");
+      //M5.Lcd.println("connect");
       Serial.printf("connect\n");
       deviceConnected = true;
     };
 
     void onDisconnect(BLEServer* pServer) {
-      M5.Lcd.println("disconnect");
+      //M5.Lcd.println("disconnect");
       Serial.printf("disconnect\n");
       deviceConnected = false;
     }
@@ -34,16 +34,16 @@ class MyServerCallbacks: public BLEServerCallbacks {
 
 class MyCallbacks: public BLECharacteristicCallbacks {
     void onRead(BLECharacteristic *pCharacteristic) {
-      M5.Lcd.println("read");
+      //M5.Lcd.println("read");
       Serial.printf("read\n");
       pCharacteristic->setValue("Hello World!");
     }
 
     void onWrite(BLECharacteristic *pCharacteristic) {
       Serial.printf("write\n");
-      M5.Lcd.println("write");
+      //M5.Lcd.println("write");
       std::string value = pCharacteristic->getValue();
-      M5.Lcd.println(value.c_str());
+      //M5.Lcd.println(value.c_str());
       
     }
 };
@@ -53,6 +53,7 @@ float  sensorValue  = 0;
 void setup() {
   Serial.printf("setup\n");
   M5.begin();
+  //M5.Lcd.writecommand(ILI9341_DISPOFF);
   //M5.Lcd.setBrightness(0);
   M5.Lcd.setTextColor(TFT_GREEN, TFT_BLACK);
   M5.Lcd.setTextSize(3);
@@ -90,13 +91,13 @@ void loop() {
     delay(1);
   }
   sensorValue = sensorValue / 100.0;
-    M5.Lcd.printf("Water Level: %d\n", sensorValue);
-//  Serial.println(sensorValue);
-  delay(30);
+  //  M5.Lcd.printf("Water Level: %d\n", sensorValue);
+  Serial.println(sensorValue);
   if (deviceConnected) {
     //    Serial.printf("*** Sent Value: %d ***\n", sensorValue);
     pCharacteristic->setValue(sensorValue);
     pCharacteristic->notify();
+    delay(500);
   }
   else {
 //    esp_light_sleep_start();
