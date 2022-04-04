@@ -8,7 +8,7 @@ import time
 from datetime import datetime, timedelta
 
 # Set budget
-BUDGET = 350
+BUDGET = 399
 API_KEY = "3c3bfe5fe77a667b64fd41b816d29c11"
 BASE_URL = "http://api.openweathermap.org/data/2.5/weather?"
 LOCATIONS = ["pasir ris", "tuas"]
@@ -113,8 +113,6 @@ def on_publish(client, userdata, result):  # create function for callback
 
 def adjustor(value):
     # Calculates difference in containers and increases the container sequentially till same or necessary
-    if(value == "true"):
-        return [16, 16]
     value = value
     newTemp = [averagePasirRisTemp, averageTuasTemp]
     container_difference = averagePasirRisTemp - averageTuasTemp
@@ -136,11 +134,9 @@ def adjustor(value):
     else:
         newTemp[1] += adjust_lower
         newTemp[0] += adjust_higher
-    newTemp[0] = round(newTemp[0], 2)
-    newTemp[1] = round(newTemp[1], 2)
 
     for i in range(len(newTemp)):
-        if newTemp[i] > 41.0:
+        if newTemp[i] > 24.0:
             newTemp[i] = 24.0
     return newTemp
 
@@ -162,16 +158,15 @@ temperature_client.connect(mqttBroker)
 while True:
     if BUDGET < 300:
         newTempPublisher(adjustor(8))
-    elif BUDGET > 300 and BUDGET <= 325:
+    elif BUDGET > 300 and BUDGET < 325:
         newTempPublisher(adjustor(7))
-    elif BUDGET > 325 and BUDGET <= 350:
+    elif BUDGET > 300 and BUDGET < 350:
         newTempPublisher(adjustor(6))
-    elif BUDGET > 350 and BUDGET <= 375:
+    elif BUDGET > 300 and BUDGET < 375:
         newTempPublisher(adjustor(5))
-    elif BUDGET > 375 and BUDGET <= 400:
+    elif BUDGET > 300 and BUDGET < 400:
         newTempPublisher(adjustor(4))
     else:
-        newTempPublisher(adjustor("true"))
         print('No condition met to increase temperature')
 
     time.sleep(5)

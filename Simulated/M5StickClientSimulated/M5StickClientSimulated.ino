@@ -50,7 +50,7 @@ class MyCallbacks: public BLECharacteristicCallbacks {
 
 //define SensorPin A0 //This is for Arduino board
 float  sensorValue  = 0;
-float list[]={1,2,3,4,5,4,3,2,1,0};
+float list[]={1000,2000,3000,4000,3000,2000,1000,0};
 void setup() {
   Serial.printf("setup\n");
   M5.begin();
@@ -118,12 +118,6 @@ void loop() {
     pCharacteristic->notify();
     delay(5000);
      pCharacteristic->setValue(list[7]);
-    pCharacteristic->notify();
-    delay(5000);
-     pCharacteristic->setValue(list[8]);
-    pCharacteristic->notify();
-    delay(5000);
-     pCharacteristic->setValue(list[9]);
     pCharacteristic->notify();
     delay(5000);
   }
