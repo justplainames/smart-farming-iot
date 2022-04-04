@@ -97,11 +97,11 @@ void loop() {
     //    Serial.printf("*** Sent Value: %d ***\n", sensorValue);
     pCharacteristic->setValue(sensorValue);
     pCharacteristic->notify();
-    delay(500);
+    delay(5000);
   }
-  else {
+//  else {
 //    esp_light_sleep_start();
-  }
+//  }
   M5.update();
 
 
