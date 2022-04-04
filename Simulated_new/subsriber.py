@@ -44,8 +44,8 @@ def on_message2(client, userdata, message):
 
 mqttBroker = "mqtt.eclipseprojects.io"
 # give client name
-client = mqtt.Client("pasir_ris/container_1/temperature_control")
-harvest_client = mqtt.Client('pasir_ris/container_1/harvest')
+client = mqtt.Client("tuas/container_1/temperature_control")
+harvest_client = mqtt.Client('tuas/container_1/harvest')
 client.connect(mqttBroker)
 harvest_client.connect(mqttBroker)
 
@@ -53,8 +53,8 @@ harvest_client.connect(mqttBroker)
 while True:
     client.loop_start()
     harvest_client.loop_start()
-    client.subscribe("pasir_ris/container_1/temperature_control")
-    harvest_client.subscribe('pasir_ris/container_1/harvest')
+    client.subscribe("tuas/container_1/temperature_control")
+    harvest_client.subscribe('tuas/container_1/harvest')
     client.on_message = on_message
     harvest_client.on_message = on_message2
     time.sleep(30)

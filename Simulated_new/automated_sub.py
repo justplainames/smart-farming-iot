@@ -18,7 +18,7 @@ import threading
 from bleak import BleakScanner, BleakClient
 
 mqttBroker = "mqtt.eclipseprojects.io"
-harvest_client = mqtt.Client("pasir_ris_c1")  # give client name
+harvest_client = mqtt.Client("tuas_c1")  # give client name
 
 
 def ble_pi(out_q):
@@ -112,28 +112,30 @@ def thingsboardpushdata(in_q):
     client.loop_start()
 
     data = "Data.csv"
+    Flag = "FALSE"
 
     try:
         with open(data, 'r') as csvfile:
             datareader = csv.reader(csvfile)
-            for row in datareader:
-                while True:
+            while True:
+                for row in datareader:
                     humidity = float(row[1])
-                    print(row[1])
                     temperature = float(row[0])
                     waterLevel = in_q.get()
                     size = row[3]
-                    if size == True:
-                        harvest_client.publish(
-                            'pasir_ris/container_1/harvest', "harvest")
 
                     if (waterLevel == 0.0):
                         sense.clear((0, 0, 255))
                     else:
                         sense.clear((0, 0, 0))
 
-                    print(u"Temperature: {:g}, Humidity: {:g}%, waterLevel: {:g}, Size:{}".format(
-                        temperature, humidity, waterLevel, size))
+                    print(u"Temperature: {:g}, Humidity: {:g}%, waterLevel: {:g}, Size:{}".format(temperature, humidity, waterLevel, size))
+                    if size == "TRUE" and Flag == "FALSE":
+                        harvest_client.publish(
+                            "tuas/container_1/temperature_control", "harvest")
+                        Flag = "TRUE"
+                    if size == "FALSE":
+                        Flag = "FALSE"
                     sensor_data['waterLevel'] = waterLevel
                     sensor_data['temperature'] = temperature
                     sensor_data['humidity'] = humidity
