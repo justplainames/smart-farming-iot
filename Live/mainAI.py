@@ -20,6 +20,7 @@ import numpy as np
 import importlib.util
 
 import threading
+from threading import Thread
 
 
 from bleak import BleakScanner, BleakClient
@@ -164,7 +165,7 @@ def harvest():
 
     # Initialize video stream
     #camera = cv2.VideoCapture(0)
-    videostream = VideoStream(resolution=(imW,imH),framerate=30)
+    videostream = VideoStream(resolution=(imW,imH),framerate=30).start()
     time.sleep(1)
     start = time.time()
 
@@ -176,8 +177,9 @@ def harvest():
     t1 = cv2.getTickCount()
 
     # Grab frame from video stream
-    for i in range(10):
-        frame1 = videostream.read()
+        #frame1 = camera.read()
+    frame1 = videostream.read()
+        #cv2.waitKey(30)
 
     # Acquire frame and resize to expected shape [1xHxWx3]
     frame = frame1.copy()
@@ -235,12 +237,10 @@ def harvest():
         #if (detected == True):
         #    detected = False
         print(detected)
-            #ser.write(bytes('b', 'utf-8'))
     else:
         #if (detected == False):
         #    detected = True
             print(detected)
-            #ser.write(bytes('a', 'utf-8'))
             if (biggest > HARVEST_THRESHOLD):
                 print("Detected Size: ",biggest)
                 print("HARVEST TIME!")
