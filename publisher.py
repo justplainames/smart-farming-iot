@@ -8,12 +8,12 @@ import time
 from datetime import datetime, timedelta
 
 # Set budget
-BUDGET = 350
+BUDGET = 300
 API_KEY = "3c3bfe5fe77a667b64fd41b816d29c11"
 BASE_URL = "http://api.openweathermap.org/data/2.5/weather?"
 LOCATIONS = ["pasir ris", "tuas"]
-DEVICE_PASIR = '711c4010-a999-11ec-a0c1-cff7830564bf'
-DEVICE_TUAS = '711c4010-a999-11ec-a0c1-cff7830564bf'
+DEVICE_PASIR = '47a94bb0-b25e-11ec-a14a-ddee2b216d1b'
+DEVICE_TUAS = 'c90dc490-b260-11ec-a14a-ddee2b216d1b'
 
 # startTs=1648531324856&endTs=1648531407418
 endTime = time.time() * 1000
@@ -36,6 +36,7 @@ tuas_telemetry_dict = json.loads(tuas_telemetry.text)
 
 pasir_ris_json = pasir_ris_telemetry.json()
 tuas_json = tuas_telemetry.json()
+print(pasir_ris_json)
 
 sumTemp1 = 0.0
 sumTemp2 = 0.0
@@ -113,19 +114,16 @@ def on_publish(client, userdata, result):  # create function for callback
 
 def adjustor(value):
     # Calculates difference in containers and increases the container sequentially till same or necessary
-    if(value == "true"):
-        return [16, 16]
     value = value
-    newTemp = [averagePasirRisTemp, averageTuasTemp]
+    newTemp = [16, 16]
     container_difference = averagePasirRisTemp - averageTuasTemp
     if averagePasirRisTemp < averageTuasTemp:
         newTemp[0] += container_difference
     else:
         newTemp[1] += container_difference
-    if (value - container_difference) <= 0:
-        return newTemp
+    print(value, container_difference)
 
-    # Caluculates differente environment temperature and adjusts inner container temperature based on environmental changes
+    # Caluculates different environment temperature and adjusts inner container temperature based on environmental changes
     environemnt_difference = higherTemp - lowerTemp
     adjust_higher = (value-environemnt_difference)/2
     print(adjust_higher)
@@ -136,20 +134,19 @@ def adjustor(value):
     else:
         newTemp[1] += adjust_lower
         newTemp[0] += adjust_higher
-    newTemp[0] = round(newTemp[0], 2)
-    newTemp[1] = round(newTemp[1], 2)
 
     for i in range(len(newTemp)):
-        if newTemp[i] > 41.0:
+        if newTemp[i] > 24.0:
             newTemp[i] = 24.0
+
     return newTemp
 
 
 def newTempPublisher(newTemp):
     temperature_client.publish(
-        f"pasir_ris/container_1/temperature_control", str(newTemp[0]))
+        f"pasir_ris/container_1/temperature_control", "{:.2f}".format(newTemp[0]))
     temperature_client.publish(
-        f"tuas/container_1/temperature_control", str(newTemp[1]))
+        f"tuas/container_1/temperature_control", "{:.2f}".format(newTemp[1]))
     print(
         f"Adjusts pasir_ris to {newTemp[0]}\nAdjusts Tuas to {newTemp[1]}")
 
@@ -160,18 +157,71 @@ temperature_client = paho.Client("Temperature_inside")  # give client name
 temperature_client.connect(mqttBroker)
 
 while True:
+
+    # Set budget
+    BUDGET = 300
+    API_KEY = "3c3bfe5fe77a667b64fd41b816d29c11"
+    BASE_URL = "http://api.openweathermap.org/data/2.5/weather?"
+    LOCATIONS = ["pasir ris", "tuas"]
+    DEVICE_PASIR = '47a94bb0-b25e-11ec-a14a-ddee2b216d1b'
+    DEVICE_TUAS = 'c90dc490-b260-11ec-a14a-ddee2b216d1b'
+
+    # startTs=1648531324856&endTs=1648531407418
+    endTime = time.time() * 1000
+    dtime = datetime.now() - timedelta(seconds=300)
+    startTime = time.mktime(dtime.timetuple()) * 1000
+
+    # REST API attributes to get thingsboard from first location temperature device readings
+
+    headers = CaseInsensitiveDict()
+    headers["X-Authorization"] = "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJqdXN0cGxhaW5hbWVzQGhvdG1haWwuY29tIiwic2NvcGVzIjpbIlRFTkFOVF9BRE1JTiJdLCJ1c2VySWQiOiJkZDdkYjkxMC1hOTk4LTExZWMtYTBjMS1jZmY3ODMwNTY0YmYiLCJmaXJzdE5hbWUiOiJjc2MiLCJsYXN0TmFtZSI6IjIwMDgiLCJlbmFibGVkIjp0cnVlLCJwcml2YWN5UG9saWN5QWNjZXB0ZWQiOnRydWUsImlzUHVibGljIjpmYWxzZSwidGVuYW50SWQiOiJkY2M0MmQxMC1hOTk4LTExZWMtYTBjMS1jZmY3ODMwNTY0YmYiLCJjdXN0b21lcklkIjoiMTM4MTQwMDAtMWRkMi0xMWIyLTgwODAtODA4MDgwODA4MDgwIiwiaXNzIjoidGhpbmdzYm9hcmQuaW8iLCJpYXQiOjE2NDg1Mjc2NjgsImV4cCI6MTY1MDMyNzY2OH0.-j1SL40oWmMJrDXwb_3ZqeGbhCEnl4tPbVqp9YNnXTe_UOghwlsjDt-q6DNCasFA0GS75E4dsX1uj7l_Cmstug"
+    headers["Content-Type"] = "application/json"
+
+    pasir_ris_telemetry = requests.get('http://demo.thingsboard.io/api/plugins/telemetry/DEVICE/'+DEVICE_PASIR +
+                                       '/values/timeseries?keys=temperature,&startTs=' + str(int(startTime))+'&endTs='+str(int(endTime))+'&interval=10000&limit=5&agg=AVG', headers=headers)
+    tuas_telemetry = requests.get('http://demo.thingsboard.io/api/plugins/telemetry/DEVICE/'+DEVICE_TUAS + '/values/timeseries?keys=temperature,&startTs=' +
+                                  str(int(startTime))+'&endTs='+str(int(endTime))+'&interval=10000&limit=5&agg=AVG', headers=headers)
+
+    pasir_ris_telemetry_dict = json.loads(pasir_ris_telemetry.text)
+    tuas_telemetry_dict = json.loads(tuas_telemetry.text)
+
+    pasir_ris_json = pasir_ris_telemetry.json()
+    tuas_json = tuas_telemetry.json()
+
+    sumTemp1 = 0.0
+    sumTemp2 = 0.0
+
+    for x in pasir_ris_json['temperature']:
+        # Average out all the temperature reading being captured
+        sumTemp1 += float(pasir_ris_json['temperature'][0]['value'])
+
+    for x in tuas_json['temperature']:
+        # Average out all the temperature reading being captured
+        sumTemp2 += float(tuas_json['temperature'][0]['value'])
+
+    averagePasirRisTemp = sumTemp1 / len(pasir_ris_json['temperature'])
+    print("----First Container----")
+    print("sum of temperature is: ", str(sumTemp1) + " degree celcius",
+          "\nAverage temperature is: ", str(averagePasirRisTemp) + " degree celcius")
+
+    averageTuasTemp = sumTemp2 / len(tuas_json['temperature'])
+    print("----Second Container----")
+    print("sum of temperature is: ", str(sumTemp2) + " degree celcius",
+          "\nAverage temperature is: ", str(averageTuasTemp) + " degree celcius")
+
+    # API Request to retrieve temperature reading from openweather website
+    # First container location
     if BUDGET < 300:
         newTempPublisher(adjustor(8))
-    elif BUDGET > 300 and BUDGET <= 325:
+    elif BUDGET >= 300 and BUDGET < 325:
         newTempPublisher(adjustor(7))
-    elif BUDGET > 325 and BUDGET <= 350:
+    elif BUDGET >= 300 and BUDGET < 350:
         newTempPublisher(adjustor(6))
-    elif BUDGET > 350 and BUDGET <= 375:
+    elif BUDGET >= 300 and BUDGET < 375:
         newTempPublisher(adjustor(5))
-    elif BUDGET > 375 and BUDGET <= 400:
+    elif BUDGET >= 300 and BUDGET < 400:
         newTempPublisher(adjustor(4))
     else:
-        newTempPublisher(adjustor("true"))
         print('No condition met to increase temperature')
 
     time.sleep(5)
