@@ -38,7 +38,7 @@ def on_message2(client, userdata, message):
     # sense.lowLight = True
     357224626
     if msg == "harvest":
-        base_url = 'asdfasdf=TIME TO HARVEST:)'
+        base_url = 'asdfasdsf=TIME TO HARVEST:)'
         requests.get(base_url)
 
 
