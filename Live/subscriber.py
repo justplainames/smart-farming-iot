@@ -38,7 +38,7 @@ def on_message2(client, userdata, message):
     # sense.lowLight = True
     357224626
     if msg == "harvest":
-        base_url = 'https://api.telegram.org/bot5172874200:AAHQvea7ycHSR5xTWSMOUQZI7io2632BVjk/sendMessage?chat_id=357224626&text=TIME TO HARVEST:)'
+        base_url = '__ TO HARVEST:)'
         requests.get(base_url)
 
 

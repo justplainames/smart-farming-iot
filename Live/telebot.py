@@ -6,7 +6,7 @@ from telegram.ext.messagehandler import MessageHandler
 from pandas import *
 import requests
 
-TOKEN = "5172874200:AAHQvea7ycHSR5xTWSMOUQZI7io2632BVjk"
+TOKEN = "ASDASDS"
 
 data = read_csv("Data(Live).csv")
 
@@ -23,7 +23,7 @@ def help(update: Update, context: CallbackContext):
 
 def data_url(update: Update, context: CallbackContext):
     update.message.reply_text(
-        "Your link here https://demo.thingsboard.io/dashboard/f70ba180-b25d-11ec-a14a-ddee2b216d1b?publicId=403452a0-b34c-11ec-a0c1-cff7830564bf")
+        "Your link here ")
 
 def humidity(update: Update, context: CallbackContext):
     data = read_csv("Data(Live).csv")
